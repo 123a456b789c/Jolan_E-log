@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Jolán</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/Dark-NavBar-1.css">
+    <link rel="stylesheet" href="assets/css/Dark-NavBar-2.css">
+    <link rel="stylesheet" href="assets/css/Dark-NavBar.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script>
+        
+        function addlistener() {
+        var querybox = document.getElementById("query");
+querybox.addEventListener("keydown", function (e) {
+    if (e.code === "Enter") {
+        search();
+    }
+});
+var querybox2 = document.getElementById("dest");
+querybox2.addEventListener("keydown", function (e) {
+    if (e.code === "Enter") {
+        distance();
+    }
+});
+}
+
+function distance() {
+        var http = new XMLHttpRequest();
+        var qth = document.getElementById('qth').value
+        var dest = document.getElementById('dest').value
+        var url = `https://www.distance24.org/route.json?stops=${qth}|${dest}`;
+        http.open('GET', url, true);
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        http.onreadystatechange = function () {//Call a function when the state changes.
+            if (http.readyState == 4 && http.status == 200) {
+                var data = JSON.parse(http.responseText)
+                document.getElementById('qth').value = ""
+                document.getElementById('dest').value = ""
+                document.getElementById('distance').innerHTML = `${data.distance} km távolságra - Időeltolódás: ${data.travel.timeOffset.offsetMins} perc`
+                console.log(data)
+            }
+            }
+        http.send();
+            }
+
+
+        function search() {
+                var query =  document.getElementById("query").value.toUpperCase()
+                var url = 'http://localhost:433/search';
+                var http = new XMLHttpRequest();
+                http.open('POST', url, true);
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        if (http.responseText == 'NOINDEX') {
+                        var table = document.getElementById('data').getElementsByTagName('tbody')[0];
+                        table.innerHTML = ""
+                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">Nincs Adat&nbsp&nbsp&nbsp</td></tr>`;
+                        } else {
+                        var table = document.getElementById('data').getElementsByTagName('tbody')[0];
+                        table.innerHTML = ""
+                        var json = JSON.parse(http.responseText)
+                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.A}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.B}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.C}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.D}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.E}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.F}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.G}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.H}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.J}&nbsp&nbsp&nbsp</td><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json.K}&nbsp&nbsp&nbsp</td></tr>`;
+
+
+                        }
+                    }
+                }
+                http.send(`query=${query}`);
+                document.getElementById("query").value = ""
+            }
+
+    </script>
+</head>
+
+<body onload="addlistener()">
+    <div>
+        <nav class="navbar navbar-light navbar-expand-md sticky-top navigation-clean-button" style="height:80px;background-color:#37434d;color:#ffffff;">
+            <div class="container-fluid"><a class="navbar-brand" href="index.html">&nbsp;Vissza a Loghoz</a>
+
+            </div>
+        </nav>
+        <div class="d-lg-flex justify-content-lg-center">
+            <div class="table-responsive" style="padding-left: 20px;padding-right: 20px;">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>Hívójel (csak magyar jelek)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="width: 285px;"><input type="text" id="query" style="border-radius: 3px;text-transform:uppercase;background: var(--bs-light);border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);width: 294px;"></td>
+                        </tr>
+                        <tr></tr>
+                    </tbody>
+                </table>
+                <div class="text-start d-lg-flex justify-content-lg-center"><button class="btn btn-primary text-center border rounded-0" type="button" onclick="search();" style="background: var(--bs-dark);"><strong>Rögzít</strong></button></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>QTH (város)</th>
+                            <th>Ellenállomás QTH (város)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="width: 285px;"><input type="text" id="qth" style="border-radius: 3px;text-transform:uppercase;background: var(--bs-light);border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);width: 294px;"></td>
+                            <td style="width: 285px;"><input type="text" id="dest" style="border-radius: 3px;text-transform:uppercase;background: var(--bs-light);border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);width: 294px;"></td>
+                        </tr>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="text-start d-lg-flex justify-content-lg-center"><button class="btn btn-primary text-center border rounded-0" type="button" onclick="distance();" style="background: var(--bs-dark);"><strong>Távolság és Időeltolódás</strong></button></div></div></br><p class="text-center" id="distance"><strong></strong></p></div>
+        <div class="table-responsive">
+            <table id="data" class="table">
+                <thead>
+                    <tr>
+                        <th>Név</th>
+                        <th>Ország</th>
+                        <th>Irányitószám</th>
+                        <th>Város</th>
+                        <th>Közterület, házszám</th>
+                        <th>Engedély száma</th>
+                        <th>Hívójel</th>
+                        <th>Közösségi vagy egyéni engyedély</th>
+                        <th>Szint</th>
+                        <th>Morse</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

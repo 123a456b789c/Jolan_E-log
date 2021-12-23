@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Jolán</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/Dark-NavBar-1.css">
+    <link rel="stylesheet" href="assets/css/Dark-NavBar-2.css">
+    <link rel="stylesheet" href="assets/css/Dark-NavBar.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+    <style>
+
+
+
+    </style>
+    
+    <script>
+        function update() {
+            var http = new XMLHttpRequest();
+            var url = 'http://localhost:433/weather';
+            http.open('GET', url, true);
+            http.onreadystatechange = function () {
+                if (http.readyState == 4 && http.status == 200) {
+                    var json = JSON.parse(http.responseText)
+                    document.getElementById("updated").innerHTML = json.solar.solardata[0].updated
+                    document.getElementById("sfi").innerHTML = json.solar.solardata[0].solarflux
+                    document.getElementById("a").innerHTML = json.solar.solardata[0].aindex
+                    document.getElementById("k").innerHTML = json.solar.solardata[0].kindex
+                    document.getElementById("x-ray").innerHTML = json.solar.solardata[0].xray
+                    document.getElementById("solarspots").innerHTML = json.solar.solardata[0].sunspots
+                    document.getElementById("noise").innerHTML = json.solar.solardata[0].signalnoise
+
+                    document.getElementById("80d").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[0]._
+                    document.getElementById("30d").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[1]._
+                    document.getElementById("17d").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[2]._
+                    document.getElementById("12d").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[3]._
+
+                    document.getElementById("80n").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[4]._
+                    document.getElementById("30n").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[5]._
+                    document.getElementById("17n").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[6]._
+                    document.getElementById("12n").innerHTML = json.solar.solardata[0].calculatedconditions[0].band[7]._
+
+                }
+
+
+
+
+            }
+            http.send();
+        }
+
+
+    </script>
+</head>
+
+<body class="bg-dark" onload="update()">
+    <div>
+        <nav class="navbar navbar-light navbar-expand-md sticky-top navigation-clean-button bg-dark"
+            style="height:80px;color:#ffffff;">
+            <div class="container-fluid"><a class="navbar-brand" href="index.html">&nbsp;Vissza a Loghoz</a>
+
+            </div>
+        </nav>
+    </div>
+    <div class="d-flex flex-row justify-content-center" id="weather">
+        <table class="weather">
+            <thead>
+                <tr></tr>
+                <tr></tr>
+            </thead>
+            <tbody>
+                <tr><td><p class="tip">Frisítve: </p></td><td><p id="updated" class="value">0</p></td></tr>
+                <tr><td><p class="tip">SFI: </p></td><td><p id="sfi" class="value">0</p></td></tr>
+                <tr><td><p class="tip">A:</p></td><td><p id="a" class="value">0</p></td></tr>
+                <tr><td><p class="tip">K:</p></td><td><p id="k" class="value">0</p></td></tr>
+                <tr><td><p class="tip">X-Ray:</p></td><td><p id="x-ray" class="value">0</p></td></tr>
+                <tr><td><p class="tip">Napfoltok: </p></td><td><p id="solarspots" class="value">0</p></td></tr>
+                <tr><td><p class="tip">Zaj: </p></td><td><p id="noise" class="value">0</p></td></tr>
+            </tbody>
+        </table>
+
+        <table class="weather">
+            <thead>
+                <tr></tr>
+                <tr></tr>
+                <tr></tr>
+            </thead>
+            <tbody>
+                <tr><td><p class="tip">Sáv</p></td><td><p class="tip">Nappal</p></td><td><p class="tip">Éjjel</p></td></tr>
+                <tr><td><p class="tip">80m-40m</p></td><td><p id="80d" class="band">0</p></td><td><p id="80n" class="band">0</p></td></tr>
+                <tr><td><p class="tip">30m-20m</p></td><td><p id="30d" class="band">0</p></td><td><p id="30n" class="band">0</p></td></tr>
+                <tr><td><p class="tip">17m-15m</p></td><td><p id="17d" class="band">0</p></td><td><p id="17n" class="band">0</p></td></tr>
+                <tr><td><p class="tip">12m-10m</p></td><td><p id="12d" class="band">0</p></td><td><p id="12n" class="band">0</p></td></tr>
+            </tbody>
+        </table>
+
+
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

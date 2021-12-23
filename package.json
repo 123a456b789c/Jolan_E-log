@@ -1,0 +1,28 @@
+{
+  "name": "jolan-qsl",
+  "version": "0.0.1",
+  "description": "Jolan QSL logger.",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "hamradio",
+    "qsl"
+  ],
+  "author": "Mikula Lajos",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "electron": "^16.0.4",
+    "electron-packager": "^15.4.0",
+    "express": "^4.17.1",
+    "geoip-lite": "^1.4.2",
+    "html-pdf": "^3.0.1",
+    "node-json-db": "^1.4.1",
+    "open": "^8.4.0",
+    "public-ip": "^4.0.4",
+    "xml2js": "^0.4.23",
+    "xmlhttprequest": "^1.8.0"
+  }
+}

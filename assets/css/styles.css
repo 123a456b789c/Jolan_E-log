@@ -1,0 +1,28 @@
+.tip {
+    font-family: 'Courier Prime', monospace;
+    font-size: 25px;
+    color:white;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.value {
+    font-family: 'Courier Prime', monospace;
+    font-size: 25px;
+    color:rgb(0, 255, 0);
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.band{
+    font-family: 'Courier Prime', monospace;
+    font-size: 25px;
+    color:rgb(146, 255, 132);
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.weather {
+    padding-right: 20px;
+    padding-left: 20px;
+}
