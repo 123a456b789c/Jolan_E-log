@@ -8,6 +8,7 @@ const geoip = require('geoip-lite');
 const xml2js = require('xml2js')
 var fs = require('fs');
 const server = express();
+const ejs = require('ejs')
 var cors = require('cors');
 server.use(require('body-parser').urlencoded({ extended: false }));
 let mainWindow
@@ -15,6 +16,7 @@ const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig')
 var callbook = require('./convertcsv.json');
 const db = new JsonDB(new Config("db.json", true, false, '/'));
+
 
   async function createWindow () {
     mainWindow = new BrowserWindow({autoHideMenuBar: true, icon: __dirname + '/icon.ico'})
@@ -27,7 +29,7 @@ const db = new JsonDB(new Config("db.json", true, false, '/'));
 
 
   server.post("/", function(req, res) {
-    db.push("/qsl[]", {"dur": req.body.dur, "time": req.body.time, "call": req.body.call, "frequency": req.body.freq, "mode": req.body.mode, "rst": parseInt(req.body.rst)});
+    db.push("/qsl[]", {"from": req.body.from,"to": req.body.to, "time": req.body.time, "call": req.body.call, "frequency": req.body.freq, "mode": req.body.mode, "rst": parseInt(req.body.rst)});
     res.send('OK')
   });
 
@@ -36,17 +38,27 @@ const db = new JsonDB(new Config("db.json", true, false, '/'));
     res.send('OK')
   });
 
+  server.post("/edit", function(req, res) {
+    var qsl = `/qsl[${req.body.place}]`
+    db.push(qsl, {"from": req.body.from,"to": req.body.to, "time": req.body.time, "call": req.body.call, "frequency": req.body.freq, "mode": req.body.mode, "rst": parseInt(req.body.rst)});
+    res.send('OK')
+  });
+
   server.post("/qsl", function(req, res) {
 
-    var html = `<!DOCTYPE html><html><head></head><body style="  display: flex; justify-content: center;"><h1> QSL lap</h1>    <table style="border-style: solid;">        <tr>          <th>Hívójel</th>          <th>Rögzítve</th>          <th>Időtartam</th>          <th>Mód</th>          <th>RST</th>        </tr>        <tr>          <td><strong>${req.body.call}</strong></td>          <td>${req.body.time}</td>          <td>${req.body.dur} perc</td>          <td>${req.body.mode}</td>          <td>${req.body.rst}</td>        </tr>      </table></body></html>`
-    
-    const now = new Date()
+    const now = new Date().toUTCString();
     var time = now
+  ejs.renderFile("qsl.ejs", {time: now, name: req.body.call, from: req.body.from, to:req.body.to, freq:req.body.freq, mode: req.body.mode, rst: req.body.rst }, function(err, str){
+    var html = str
+
 
     var options = { format: 'Letter' };
     pdf.create(html, options).toFile(`./${req.body.time.replace(/[/:,]/g,'')}-${req.body.mode}-QSL.pdf`, function(err, res) {
     if (err) return console.log(err);
     open(res.filename);
+  });
+
+  
 });  
 });
   

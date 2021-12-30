@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+</head>
+
+<body style="background: var(--bs-gray-100);">
+    <p style="font-size: 27px;text-align: center;font-weight: bold;">QSL Lap</p>
+    <p style="text-align: center;"><em>Készült: <%= time %></em></p>
+    <div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Adat</th>
+                        <th>Érték</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Összeköttetés Kezdete</td>
+                        <td><%= from %></td>
+                    </tr>
+                    <tr>
+                        <td>Összeköttetés Vége</td>
+                        <td><%= to %></td>
+                    </tr>
+                    <tr style="background: var(--bs-gray-400);">
+                        <td style="font-weight: bold;">Hívójel</td>
+                        <td style="font-weight: bold;"><%= name %></td>
+                    </tr>
+                    <tr>
+                        <td>Frekvencia</td>
+                        <td><%= freq %> Mhz</td>
+                    </tr>
+                    <tr>
+                        <td>Adásmód</td>
+                        <td><%= mode %></td>
+                    </tr>
+                    <tr>
+                        <td>RST</td>
+                        <td><%= rst %></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p style="text-align: center;font-weight: bold;font-size: 27px;">73!</p>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

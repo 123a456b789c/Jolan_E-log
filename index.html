@@ -17,7 +17,8 @@
             var url = 'http://localhost:433/';
             const now = new Date()
             var time = now.toLocaleString('en-GB', { timeZone: 'UTC' })
-            var duration = document.getElementById("dur").value
+            var from = document.getElementById("from").value
+            var to = document.getElementById("to").value
             var call = document.getElementById("call").value.toUpperCase()
             var freq = document.getElementById("freq").value
             var mode = document.getElementById("mode").value
@@ -30,7 +31,8 @@
                 http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 http.onreadystatechange = function () {//Call a function when the state changes.
                     if (http.readyState == 4 && http.status == 200) {
-                        document.getElementById("dur").value = ''
+                        document.getElementById("from").value = ''
+                        document.getElementById("to").value = ''
                         document.getElementById("call").value = ''
                         document.getElementById("freq").value = ''
                         document.getElementById("mode").value = 'CW'
@@ -41,10 +43,60 @@
                         update();
                     }
                 }
-                http.send(`dur=${duration}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r  + s + t}`);
+                http.send(`from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r  + s + t}`);
             }
         }
 
+        function sendedit(place) {
+            var http = new XMLHttpRequest();
+            var url = 'http://localhost:433/edit';
+            const now = new Date()
+            var time = now.toLocaleString('en-GB', { timeZone: 'UTC' })
+            var from = document.getElementById("from").value
+            var to = document.getElementById("to").value
+            var call = document.getElementById("call").value.toUpperCase()
+            var freq = document.getElementById("freq").value
+            var mode = document.getElementById("mode").value
+            var r = document.getElementById("r").value
+            var s = document.getElementById("s").value
+            var t = document.getElementById("t").value
+
+            if (call && freq && r && s && t) {
+                http.open('POST', url, true);
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        document.getElementById("from").value = ''
+                        document.getElementById("to").value = ''
+                        document.getElementById("call").value = ''
+                        document.getElementById("freq").value = ''
+                        document.getElementById("mode").value = 'CW'
+                        document.getElementById("r").value = ''
+                        document.getElementById("s").value = ''
+                        document.getElementById("t").value = ''
+                        document.getElementById( "close" ).setAttribute( "onClick", `javascript: send();` );
+                        document.getElementById( "close" ).textContent = 'Rögzít';
+
+                        update();
+                    }
+                }
+                http.send(`place=${place}&from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r  + s + t}`);
+            }
+        }
+
+        function edit(place,freq,call,time,from,to,mode,rst) {
+            var rstp = rst.split('').join(',')
+            document.getElementById("from").value = from
+            document.getElementById("to").value = to
+            document.getElementById("call").value = call
+            document.getElementById("freq").value = freq
+            document.getElementById("mode").value = mode
+            document.getElementById("r").value = rstp[0]
+            document.getElementById("s").value = rstp[2]
+            document.getElementById("t").value = rstp[4]
+            document.getElementById( "close" ).setAttribute( "onClick", `javascript: sendedit(${place});` );
+            document.getElementById( "close" ).textContent = 'Szerkesztés rögzítése';
+        }
         
         function delentry(id) {
             var http = new XMLHttpRequest();
@@ -62,7 +114,7 @@
             }
         }
 
-        function print(call,time,dur,mode,rst) {
+        function print(freq,call,time,from,to,mode,rst) {
             var http = new XMLHttpRequest();
             var url = 'http://localhost:433/qsl';
             var id = id
@@ -74,7 +126,7 @@
                         update();
                     }
                 }
-                http.send(`call=${call}&time=${time}&dur=${dur}&mode=${mode}&rst=${rst}`);
+                http.send(`freq=${freq}&call=${call}&time=${time}&from=${from}&to=${to}&mode=${mode}&rst=${rst}`);
             }
         }
 
@@ -92,7 +144,7 @@
                     var json = JSON.parse(http.responseText)
                     var arrayLength = json.length;
                     for (var i = 0; i < arrayLength; i++) {
-                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].call}','${json[i].time}','${json[i].dur}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button></td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].dur} perc - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br></td></tr>`;
+                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br></td></tr>`;
                     }
 
                 }
@@ -121,11 +173,11 @@
             </div>
         </nav>
         <div class="d-lg-flex justify-content-lg-center">
-            <div class="table-responsive" style="padding-left: 20px;padding-right: 20px;">
+            <div class="table-responsive" style="padding-left: 5px;padding-right: 5px;">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Időtartam</th>
+                            <th>Kezdés - Vége</th>
                             <th>Hívójel</th>
                             <th>Frekvencia</th>
                             <th>Adásmód</th>
@@ -134,7 +186,9 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="width: 196px;"><input type="time" id="dur"
+                            <td style="width: 196px;"><input type="time" id="from"
+                                style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
+                                <input type="time" id="to"
                                 style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
                            </td>
                             <td style="width: 196px;"><input type="text" id="call"
