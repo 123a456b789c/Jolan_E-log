@@ -23,13 +23,14 @@ const db = new JsonDB(new Config("db.json", true, false, '/'));
     mainWindow.setTitle("Jolán E-Log");
     mainWindow.loadURL('file://' + __dirname + '/index.html')
     mainWindow.setMinimumSize(1280, 700)
-    //mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
     //titleBarStyle: 'hidden',  titleBarOverlay: { color: '#212529', symbolColor: '#ffffff' }
   }
 
 
   server.post("/", function(req, res) {
-    db.push("/qsl[]", {"from": req.body.from,"to": req.body.to, "time": req.body.time, "call": req.body.call, "frequency": req.body.freq, "mode": req.body.mode, "rst": parseInt(req.body.rst)});
+    console.log(req.body.note.replace)
+    db.push("/qsl[]", {"note": req.body.note, "from": req.body.from,"to": req.body.to, "time": req.body.time, "call": req.body.call, "frequency": req.body.freq, "mode": req.body.mode, "rst": parseInt(req.body.rst)});
     res.send('OK')
   });
 

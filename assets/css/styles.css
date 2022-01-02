@@ -26,3 +26,20 @@
     padding-right: 20px;
     padding-left: 20px;
 }
+
+.megjegyzes {
+    background: whitesmoke;
+    display: none;
+    position: fixed;
+    right: 50%;
+    top: 50%;
+    border: 1px solid #000000;
+    z-index: 9;
+}
+
+.megjegyzes > * {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 4px;
+    margin-left: 4px;
+}

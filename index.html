@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="assets/css/Dark-NavBar.css">
     <link rel="stylesheet" href="assets/css/styles.css">
     <script>
+        function note() {
+            var usernote = document.getElementById('note').value
+            window.usernote = usernote
+            closeForm()
+        }
         function send() {
             var http = new XMLHttpRequest();
             var url = 'http://localhost:433/';
@@ -25,7 +30,9 @@
             var r = document.getElementById("r").value
             var s = document.getElementById("s").value
             var t = document.getElementById("t").value
-
+            if (window.usernote == undefined) {
+                window.usernote = "Nincs megadva!"
+            }
             if (call && freq && r && s && t) {
                 http.open('POST', url, true);
                 http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -39,11 +46,13 @@
                         document.getElementById("r").value = ''
                         document.getElementById("s").value = ''
                         document.getElementById("t").value = ''
+                        document.getElementById('note').value = ''
+                        window.usernote = ''
 
                         update();
                     }
                 }
-                http.send(`from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r  + s + t}`);
+                http.send(`note=${window.usernote}&from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r + s + t}`);
             }
         }
 
@@ -74,17 +83,17 @@
                         document.getElementById("r").value = ''
                         document.getElementById("s").value = ''
                         document.getElementById("t").value = ''
-                        document.getElementById( "close" ).setAttribute( "onClick", `javascript: send();` );
-                        document.getElementById( "close" ).textContent = 'Rögzít';
+                        document.getElementById("close").setAttribute("onClick", `javascript: send();`);
+                        document.getElementById("close").textContent = 'Rögzít';
 
                         update();
                     }
                 }
-                http.send(`place=${place}&from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r  + s + t}`);
+                http.send(`place=${place}&from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r + s + t}`);
             }
         }
 
-        function edit(place,freq,call,time,from,to,mode,rst) {
+        function edit(place, freq, call, time, from, to, mode, rst) {
             var rstp = rst.split('').join(',')
             document.getElementById("from").value = from
             document.getElementById("to").value = to
@@ -94,10 +103,10 @@
             document.getElementById("r").value = rstp[0]
             document.getElementById("s").value = rstp[2]
             document.getElementById("t").value = rstp[4]
-            document.getElementById( "close" ).setAttribute( "onClick", `javascript: sendedit(${place});` );
-            document.getElementById( "close" ).textContent = 'Szerkesztés rögzítése';
+            document.getElementById("close").setAttribute("onClick", `javascript: sendedit(${place});`);
+            document.getElementById("close").textContent = 'Szerkesztés rögzítése';
         }
-        
+
         function delentry(id) {
             var http = new XMLHttpRequest();
             var url = 'http://localhost:433/delete';
@@ -114,7 +123,7 @@
             }
         }
 
-        function print(freq,call,time,from,to,mode,rst) {
+        function print(freq, call, time, from, to, mode, rst) {
             var http = new XMLHttpRequest();
             var url = 'http://localhost:433/qsl';
             var id = id
@@ -143,8 +152,12 @@
 
                     var json = JSON.parse(http.responseText)
                     var arrayLength = json.length;
-                    for (var i = 0; i < arrayLength; i++) {
-                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br></td></tr>`;
+                    for (var i = arrayLength - 1; i >= 0; i--) {
+                    if (json[i].note == "Nincs megadva!")        {
+                            table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br></td></tr>`;
+                    } else {
+                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br><abbr title="${json[i].note}">Megjegyzés</abbr></td></tr>`;
+                    }
                     }
 
                 }
@@ -155,6 +168,19 @@
             }
             http.send();
         }
+
+
+        function openForm() {
+            document.getElementById("closeform").setAttribute("onClick", `javascript: closeForm();`);
+            document.getElementById("megjegyzes").style.display = "block";
+        }
+
+        function closeForm() {
+            document.getElementById("megjegyzes").style.display = "none";
+            document.getElementById("closeform").setAttribute("onClick", `javascript: openForm();`);
+        }
+
+
     </script>
 </head>
 
@@ -163,94 +189,106 @@
         <nav class="navbar navbar-light navbar-expand-md sticky-top navigation-clean-button"
             style="height:80px;background-color:#37434d;color:#ffffff;">
             <div class="container-fluid"><a class="navbar-brand" href="index.html">&nbsp;Jolán E-Log</a>
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" style="color:#ffffff;" href="index-1.html"><i
-                                    class="fa fa-binoculars"></i>&nbsp;Hívójel-lokalizáció</a></li>
-                        <li class="nav-item"><a class="nav-link" style="color:#ffffff;" href="index-2.html"><i
-                                    class="fa fa-cloud"></i>&nbsp;Időjárás</a></li>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" style="color:#ffffff;" href="index-1.html"><i
+                                class="fa fa-binoculars"></i>&nbsp;Hívójel-lokalizáció</a></li>
+                    <li class="nav-item"><a class="nav-link" style="color:#ffffff;" href="index-2.html"><i
+                                class="fa fa-cloud"></i>&nbsp;Időjárás</a></li>
 
-                    </ul>
+                </ul>
             </div>
         </nav>
-        <div class="d-lg-flex justify-content-lg-center">
-            <div class="table-responsive" style="padding-left: 5px;padding-right: 5px;">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Kezdés - Vége</th>
-                            <th>Hívójel</th>
-                            <th>Frekvencia</th>
-                            <th>Adásmód</th>
-                            <th>R S T</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="width: 196px;"><input type="time" id="from"
-                                style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
-                                <input type="time" id="to"
-                                style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
-                           </td>
-                            <td style="width: 196px;"><input type="text" id="call"
-                                 style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
-                            </td>
-                            <td style="padding-left: 0;margin: -3px;width: 262px;color: var(--bs-table-striped-color);">
-                                <input id="freq" type="number" min="0"
-                                    style="border-color: var(--bs-table-bg);border-bottom-width: 1px;border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);">&nbsp;<strong>MHz</strong>
-                            </td>
-                            <td style="width: 284px;"><select id="mode"
-                                    style="background: var(--bs-table-striped-color);color: var(--bs-body-bg);">
-                                    <optgroup label="A1A">
-                                        <option value="CW" selected="">CW</option>
-                                    </optgroup>
-                                    <optgroup label="A3E">
-                                        <option value="AM">AM</option>
-                                    </optgroup>
-                                    <optgroup label="F3E">
-                                        <option value="FM" selected="">FM</option>
-                                    </optgroup>
-                                    <optgroup label="A3J">
-                                        <option value="USB">USB</option>
-                                        <option value="LSB">LSB</option>
-                                    </optgroup>
-                                    <optgroup label="Digitális adásmódok">
-                                        <option value="F1B">Egyéb - F1B</option>
-                                        <option value="AMTOR">AMTOR</option>
-                                        <option value="D-STAR">D-STAR</option>
-                                        <option value="Hellschreiber">Hellschreiber</option>
-                                        <option value="APRS">APRS</option>
-                                        <option value="RTTY">RTTY</option>
-                                        <option value="FT8">FT8</option>
-                                    </optgroup>
-                                </select></td>
-                            <td style="color: var(--bs-table-striped-color);"><input id="r" type="number"
-                                    style="width: 41px;border-color: var(--bs-table-bg);border-bottom-width: 1px;border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);"
-                                    min="1" max="5" step="1"><strong>-</strong><input id="s" type="number"
-                                    style="width: 41px;border-color: var(--bs-table-bg);border-bottom-width: 1px;border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);"
-                                    min="1" max="9" step="1"><strong>-</strong><input id="t" type="number"
-                                    style="width: 41px;border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);"
-                                    min="1" max="9" step="1"></td>
-                        </tr>
-                        <tr></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="megjegyzes" id="megjegyzes">
+            <p><strong>Megjegyzés</strong></p><br><textarea placeholder="Nincs megadva!" id="note"></textarea><br>
+            <button onclick="note()" class="btn btn-danger text-center border rounded-0"
+                style="background: var(--bs-dark);"><strong>Hozzáadás</strong></button>
         </div>
-        <div class="text-start d-lg-flex justify-content-lg-center"><button
-                class="btn btn-primary text-center border rounded-0" type="button" onclick="send()" id='close'
-                style="background: var(--bs-dark);"><strong>Rögzít</strong></button></div>
-        <div class="table-responsive">
-            <table id="qsl" class="table">
+        
+
+    </div>
+    <div class="d-lg-flex justify-content-lg-center">
+        <div class="table-responsive" style="padding-left: 5px;padding-right: 5px;">
+            <table class="table">
                 <thead>
                     <tr>
-                        <th>Idő (ekkor rögzítve)</th>
-                        <th>Összeköttetés adatai</th>
+                        <th>Kezdés - Vége</th>
+                        <th>Hívójel</th>
+                        <th>Frekvencia</th>
+                        <th>Adásmód</th>
+                        <th>R S T</th>
+                        <th>Megjegyzés</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <tr>
+                        <td style="width: 196px;"><input type="time" id="from"
+                                style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
+                            <input type="time" id="to"
+                                style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
+                        </td>
+                        <td style="width: 196px;"><input type="text" id="call"
+                                style="border-radius: 3px;background: var(--bs-light); text-transform:uppercase; border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);">
+                        </td>
+                        <td style="padding-left: 0;margin: -3px;width: 262px;color: var(--bs-table-striped-color);">
+                            <input id="freq" type="number" min="0"
+                                style="border-color: var(--bs-table-bg);border-bottom-width: 1px;border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);">&nbsp;<strong>MHz</strong>
+                        </td>
+                        <td style="width: 284px;"><select id="mode"
+                                style="background: var(--bs-table-striped-color);color: var(--bs-body-bg);">
+                                <optgroup label="A1A">
+                                    <option value="CW" selected="">CW</option>
+                                </optgroup>
+                                <optgroup label="A3E">
+                                    <option value="AM">AM</option>
+                                </optgroup>
+                                <optgroup label="F3E">
+                                    <option value="FM" selected="">FM</option>
+                                </optgroup>
+                                <optgroup label="A3J">
+                                    <option value="USB">USB</option>
+                                    <option value="LSB">LSB</option>
+                                </optgroup>
+                                <optgroup label="Digitális adásmódok">
+                                    <option value="F1B">Egyéb - F1B</option>
+                                    <option value="AMTOR">AMTOR</option>
+                                    <option value="D-STAR">D-STAR</option>
+                                    <option value="Hellschreiber">Hellschreiber</option>
+                                    <option value="APRS">APRS</option>
+                                    <option value="RTTY">RTTY</option>
+                                    <option value="FT8">FT8</option>
+                                </optgroup>
+                            </select></td>
+                        <td style="color: var(--bs-table-striped-color);"><input id="r" type="number"
+                                style="width: 41px;border-color: var(--bs-table-bg);border-bottom-width: 1px;border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);"
+                                min="1" max="5" step="1"><strong>-</strong><input id="s" type="number"
+                                style="width: 41px;border-color: var(--bs-table-bg);border-bottom-width: 1px;border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);"
+                                min="1" max="9" step="1"><strong>-</strong><input id="t" type="number"
+                                style="width: 41px;border-width: 1px;border-color: var(--bs-table-bg);border-bottom-color: var(--bs-table-striped-color);background: var(--bs-light);"
+                                min="1" max="9" step="1"></td>
+                        <td><button onclick="openForm()" id="closeform"
+                                class="btn btn-danger text-center border rounded-0"
+                                style="background: var(--bs-dark);"><strong>Hozzáadás</strong></button></td>
+                    </tr>
+                    <tr></tr>
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="text-start d-lg-flex justify-content-lg-center"><button
+            class="btn btn-primary text-center border rounded-0" type="button" onclick="send()" id='close'
+            style="background: var(--bs-dark);"><strong>Rögzít</strong></button></div>
+    <div style="overflow:auto;"class="table-responsive">
+        <table id="qsl" class="table">
+            <thead>
+                <tr>
+                    <th>Idő (ekkor rögzítve)</th>
+                    <th>Összeköttetés adatai</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
