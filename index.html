@@ -59,6 +59,7 @@
         function sendedit(place) {
             var http = new XMLHttpRequest();
             var url = 'http://localhost:433/edit';
+            var note = document.getElementById('note').value
             const now = new Date()
             var time = now.toLocaleString('en-GB', { timeZone: 'UTC' })
             var from = document.getElementById("from").value
@@ -75,6 +76,7 @@
                 http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 http.onreadystatechange = function () {//Call a function when the state changes.
                     if (http.readyState == 4 && http.status == 200) {
+                        document.getElementById('note').value = ''
                         document.getElementById("from").value = ''
                         document.getElementById("to").value = ''
                         document.getElementById("call").value = ''
@@ -89,12 +91,13 @@
                         update();
                     }
                 }
-                http.send(`place=${place}&from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r + s + t}`);
+                http.send(`note=${note}&place=${place}&from=${from}&to=${to}&time=${time}&call=${call}&freq=${freq}&mode=${mode}&rst=${r + s + t}`);
             }
         }
 
-        function edit(place, freq, call, time, from, to, mode, rst) {
+        function edit(place,note,freq, call, time, from, to, mode, rst) {
             var rstp = rst.split('').join(',')
+            document.getElementById('note').value = note
             document.getElementById("from").value = from
             document.getElementById("to").value = to
             document.getElementById("call").value = call
@@ -154,9 +157,9 @@
                     var arrayLength = json.length;
                     for (var i = arrayLength - 1; i >= 0; i--) {
                     if (json[i].note == "Nincs megadva!")        {
-                            table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br></td></tr>`;
+                            table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].note}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br></td></tr>`;
                     } else {
-                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br><abbr title="${json[i].note}">Megjegyzés</abbr></td></tr>`;
+                        table.innerHTML += `<tr style="margin: 0px;padding: 9px;padding-top: 9px;"><td style="margin: 0px;padding: 9px;padding-top: 9px;">${json[i].time}&nbsp&nbsp&nbsp<button class="btn btn-danger text-center border rounded-0" type="button" onclick="delentry(${[i]})" style="background: var(--bs-red);"><strong>Töröl</strong></button><button class="btn btn-danger text-center border rounded-0" type="button" onclick="print('${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-teal);"><strong>QSL Lap</strong></button> <button class="btn btn-danger text-center border rounded-0" type="button" onclick="edit('${[i]}','${json[i].note}','${json[i].frequency}','${json[i].call}','${json[i].time}','${json[i].from}','${json[i].to}','${json[i].mode}','${json[i].rst}')" style="background: var(--bs-yellow);"><strong>Szerkeszt</strong></button> </td><td style="margin: 0px;padding: 9px;padding-top: 9px;"><strong>${json[i].call}</strong> - ${json[i].from} - ${json[i].to} - ${json[i].frequency} MHz - ${json[i].mode} - ${json[i].rst}<br><abbr title="${json[i].note}">Megjegyzés</abbr></td></tr>`;
                     }
                     }
 

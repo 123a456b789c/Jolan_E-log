@@ -41,7 +41,7 @@ const db = new JsonDB(new Config("db.json", true, false, '/'));
 
   server.post("/edit", function(req, res) {
     var qsl = `/qsl[${req.body.place}]`
-    db.push(qsl, {"from": req.body.from,"to": req.body.to, "time": req.body.time, "call": req.body.call, "frequency": req.body.freq, "mode": req.body.mode, "rst": parseInt(req.body.rst)});
+    db.push(qsl, {"note": req.body.note, "from": req.body.from,"to": req.body.to, "time": req.body.time, "call": req.body.call, "frequency": req.body.freq, "mode": req.body.mode, "rst": parseInt(req.body.rst)});
     res.send('OK')
   });
 
